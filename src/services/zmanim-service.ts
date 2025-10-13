@@ -31,9 +31,14 @@ export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResul
   const zmanimCalendar = new ComplexZmanimCalendar(geoLocation);
   zmanimCalendar.setDate(date);
 
-  // FIX: The methods like getAlosHashachar() return a Date object directly.
-  // We should directly call .toLocaleTimeString() on it.
-  const formatTime = (time: Date | null) => time ? time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : 'N/A';
+  // FIX: Ensure that 'timeValue' is an actual Date object before calling toLocaleTimeString.
+  const formatTime = (timeValue: Date | null | undefined): string => {
+    if (timeValue instanceof Date) {
+      return timeValue.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    }
+    // If it's not a Date object (e.g., null, undefined, or some other unexpected type), return 'N/A'.
+    return 'N/A';
+  };
 
   return {
     date: date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
