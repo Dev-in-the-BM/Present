@@ -6,11 +6,13 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { savePreference, getPreference, UserLocation } from '@/services/data-store';
 import { calculateZmanim, ZmanimResult } from '@/services/zmanim-service';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { Calendar as CalendarIcon, ArrowLeft } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
+import { toast } from 'sonner';
 
 const DEFAULT_LOCATION: UserLocation = {
   latitude: 31.7767, // Jerusalem
@@ -19,7 +21,7 @@ const DEFAULT_LOCATION: UserLocation = {
   locationName: 'Jerusalem',
 };
 
-const ZmanimDisplay: React.FC = () => {
+const ZmanimPage: React.FC = () => {
   const [location, setLocation] = useState<UserLocation>(DEFAULT_LOCATION);
   const [zmanim, setZmanim] = useState<ZmanimResult | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -48,17 +50,23 @@ const ZmanimDisplay: React.FC = () => {
 
   const handleSaveLocation = async () => {
     await savePreference('userLocation', location);
-    // Recalculate zmanim with the new location
     const calculatedZmanim = calculateZmanim(location, selectedDate);
     setZmanim(calculatedZmanim);
+    toast.success('Location saved successfully!');
   };
 
   return (
     <div className="container mx-auto p-4 max-w-3xl">
+      <Button asChild variant="outline" className="mb-4">
+        <Link to="/">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Dashboard
+        </Link>
+      </Button>
       <Card className="mb-6">
         <CardHeader>
-          <CardTitle className="text-2xl">Zmanim Calculator</CardTitle>
-          <CardDescription>View daily Zmanim for your chosen location.</CardDescription>
+          <CardTitle className="text-2xl">Zmanim Calculator Settings</CardTitle>
+          <CardDescription>Set your location to calculate Zmanim.</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
@@ -172,4 +180,4 @@ const ZmanimDisplay: React.FC = () => {
   );
 };
 
-export default ZmanimDisplay;
+export default ZmanimPage;
