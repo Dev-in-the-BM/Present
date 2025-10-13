@@ -29,7 +29,6 @@ const ZmanimPage: React.FC = () => {
   useEffect(() => {
     const loadLocation = async () => {
       const savedLocation = await getPreference<UserLocation>('userLocation');
-      console.log("DEBUG: ZmanimPage - Saved Location from localforage:", savedLocation);
       if (savedLocation) {
         setLocation(savedLocation);
       }

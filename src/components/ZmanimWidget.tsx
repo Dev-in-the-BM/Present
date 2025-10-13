@@ -23,7 +23,6 @@ const ZmanimWidget: React.FC = () => {
   useEffect(() => {
     const loadLocationAndZmanim = async () => {
       const savedLocation = await getPreference<UserLocation>('userLocation');
-      console.log("DEBUG: ZmanimWidget - Saved Location from localforage:", savedLocation);
       const currentLocation = savedLocation || DEFAULT_LOCATION;
       setLocation(currentLocation);
       

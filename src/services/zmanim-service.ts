@@ -24,7 +24,6 @@ const DEFAULT_LON = 35.2345; // Jerusalem
 const DEFAULT_TZ = 'Asia/Jerusalem';
 
 export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResult => {
-  // Robustly parse location data with fallbacks to prevent errors
   const lat = parseFloat(String(location.latitude));
   const lon = parseFloat(String(location.longitude));
 
@@ -32,13 +31,6 @@ export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResul
   const validLon = isNaN(lon) ? DEFAULT_LON : lon;
   const validTimezone = location.timezone || DEFAULT_TZ;
   const validLocationName = location.locationName || 'Default Location';
-
-  console.log("DEBUG: Zmanim Calculation Input:");
-  console.log("  Original Location:", location);
-  console.log("  Parsed Latitude:", validLat);
-  console.log("  Parsed Longitude:", validLon);
-  console.log("  Timezone:", validTimezone);
-  console.log("  Date:", date);
 
   const geoLocation = new GeoLocation(
     validLocationName,
@@ -50,16 +42,22 @@ export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResul
   const zmanimCalendar = new ComplexZmanimCalendar(geoLocation);
   zmanimCalendar.setDate(date);
 
-  const formatTime = (timeValue: Date | null | undefined): string => {
-    // Check for valid Date object before formatting
+  const formatTime = (timeValue: any): string => {
+    let dateToFormat: Date | null = null;
+
     if (timeValue instanceof Date && !isNaN(timeValue.getTime())) {
-      return timeValue.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+      dateToFormat = timeValue;
+    } else if (timeValue && typeof timeValue.toJSDate === 'function') { // Check if it's a Luxon DateTime object
+      dateToFormat = timeValue.toJSDate();
     }
-    console.warn("DEBUG: Invalid time value encountered, returning N/A:", timeValue);
+
+    if (dateToFormat instanceof Date && !isNaN(dateToFormat.getTime())) {
+      return dateToFormat.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    }
     return 'N/A';
   };
 
-  const result = {
+  return {
     date: date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
     alosHashachar: formatTime(zmanimCalendar.getAlosHashachar()),
     sunrise: formatTime(zmanimCalendar.getSunrise()),
@@ -74,7 +72,4 @@ export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResul
     sunset: formatTime(zmanimCalendar.getSunset()),
     tzeit: formatTime(zmanimCalendar.getTzais()),
   };
-
-  console.log("DEBUG: Zmanim Calculation Result:", result);
-  return result;
 };
