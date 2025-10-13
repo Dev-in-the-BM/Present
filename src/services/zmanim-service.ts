@@ -31,7 +31,9 @@ export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResul
   const zmanimCalendar = new ComplexZmanimCalendar(geoLocation);
   zmanimCalendar.setDate(date);
 
-  const formatTime = (time: Date | null) => time ? time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : 'N/A';
+  // FIX: The methods like getAlosHashachar() return a Zmanim object, not a Date object directly.
+  // We need to call .getTime() on the Zmanim object to get the Date.
+  const formatTime = (zman: Zmanim | null) => zman ? zman.getTime().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }) : 'N/A';
 
   return {
     date: date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
