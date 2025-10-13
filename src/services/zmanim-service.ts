@@ -1,4 +1,5 @@
-import { Zmanim, ComplexZmanimCalendar, GeoLocation } from 'kosher-zmanim';
+import { Zmanim } from 'kosher-zmanim'; // Keep Zmanim if it's used elsewhere, otherwise it can be removed
+import * as KosherZmanim from 'kosher-zmanim'; // Import all as namespace
 import { UserLocation } from './data-store';
 
 export interface ZmanimResult {
@@ -21,14 +22,14 @@ export interface ZmanimResult {
 }
 
 export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResult => {
-  const geoLocation = new GeoLocation(
+  const geoLocation = new KosherZmanim.GeoLocation( // Use KosherZmanim.GeoLocation
     location.locationName || 'Custom Location',
     location.latitude,
     location.longitude,
     location.timezone,
   );
 
-  const zmanimCalendar = new ComplexZmanimCalendar(geoLocation);
+  const zmanimCalendar = new KosherZmanim.ComplexZmanimCalendar(geoLocation); // Use KosherZmanim.ComplexZmanimCalendar
   zmanimCalendar.setDate(date);
 
   // Ensure that 'timeValue' is an actual Date object before calling toLocaleTimeString.
@@ -40,8 +41,6 @@ export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResul
     return 'N/A';
   };
 
-  // NOTE: If you encounter "is not a function" errors for zmanimCalendar methods,
-  // it might indicate a library loading issue. A full rebuild is recommended.
   return {
     date: date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
     alosHashachar: formatTime(zmanimCalendar.getAlosHashachar()),
