@@ -22,8 +22,8 @@ export interface ZmanimResult {
 export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResult => {
   const geoLocation = new GeoLocation(
     location.locationName || 'Custom Location',
-    location.latitude,
-    location.longitude,
+    Number(location.latitude),
+    Number(location.longitude),
     location.timezone,
   );
 

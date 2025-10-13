@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import { getPreference, UserLocation } from '@/services/data-store';
 import { calculateZmanim, ZmanimResult } from '@/services/zmanim-service';
 import { format } from 'date-fns';
-import { Link } from 'react-router-dom';
-import { Settings } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowRightCircle } from 'lucide-react';
 
 const DEFAULT_LOCATION: UserLocation = {
-  latitude: 31.7767, // Jerusalem
-  longitude: 35.2345, // Jerusalem
+  latitude: 31.7767,
+  longitude: 35.2345,
   timezone: 'Asia/Jerusalem',
   locationName: 'Jerusalem',
 };
@@ -18,6 +18,7 @@ const ZmanimWidget: React.FC = () => {
   const [location, setLocation] = useState<UserLocation>(DEFAULT_LOCATION);
   const [zmanim, setZmanim] = useState<ZmanimResult | null>(null);
   const [selectedDate] = useState<Date>(new Date());
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadLocationAndZmanim = async () => {
@@ -32,11 +33,17 @@ const ZmanimWidget: React.FC = () => {
   }, [selectedDate]);
 
   return (
-    <Card className="h-full flex flex-col">
-      <CardHeader>
-        <CardTitle>Today's Zmanim</CardTitle>
-        <CardDescription>For {location.locationName || 'Default Location'}</CardDescription>
-        <CardDescription>{format(selectedDate, "PPP")}</CardDescription>
+    <Card 
+      onClick={() => navigate('/zmanim')}
+      className="cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-white/30 dark:border-gray-700/50 h-full flex flex-col"
+    >
+      <CardHeader className="flex flex-row items-start justify-between">
+        <div>
+          <CardTitle>Today's Zmanim</CardTitle>
+          <CardDescription>For {location.locationName}</CardDescription>
+          <CardDescription>{format(selectedDate, "PPP")}</CardDescription>
+        </div>
+        <ArrowRightCircle className="h-6 w-6 text-gray-400" />
       </CardHeader>
       <CardContent className="flex-grow">
         {zmanim ? (
@@ -52,12 +59,7 @@ const ZmanimWidget: React.FC = () => {
         )}
       </CardContent>
       <CardFooter>
-        <Button asChild variant="outline" className="w-full">
-          <Link to="/zmanim">
-            <Settings className="mr-2 h-4 w-4" />
-            Change Location & See More
-          </Link>
-        </Button>
+        <p className="text-xs text-muted-foreground text-center w-full">Click to see more and change location</p>
       </CardFooter>
     </Card>
   );

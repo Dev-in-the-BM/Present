@@ -7,22 +7,22 @@ import ZmanimWidget from "@/components/ZmanimWidget";
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen w-full bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 dark:from-gray-800 dark:via-slate-900 dark:to-black p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400">Welcome back! Here's your overview for today.</p>
+        <header className="mb-8 text-center lg:text-left">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
+          <p className="text-lg text-gray-600 dark:text-gray-400 mt-1">Welcome back! Here's your overview for today.</p>
         </header>
         
         <main className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 flex flex-col gap-6">
             <SeasonalImage />
             <EventsWidget />
           </div>
           
           {/* Right Column */}
-          <div className="space-y-6">
+          <div className="flex flex-col gap-6">
             <ZmanimWidget />
             <CalendarWidget />
             <RemindersWidget />
