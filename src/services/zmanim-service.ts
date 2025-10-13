@@ -1,4 +1,4 @@
-import { ComplexZmanimCalendar, GeoLocation } from 'kosher-zmanim'; // Directly import named exports
+import { ComplexZmanimCalendar, GeoLocation } from 'kosher-zmanim';
 import { UserLocation } from './data-store';
 
 export interface ZmanimResult {
@@ -31,12 +31,10 @@ export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResul
   const zmanimCalendar = new ComplexZmanimCalendar(geoLocation);
   zmanimCalendar.setDate(date);
 
-  // Ensure that 'timeValue' is an actual Date object before calling toLocaleTimeString.
   const formatTime = (timeValue: Date | null | undefined): string => {
     if (timeValue instanceof Date) {
       return timeValue.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     }
-    // If it's not a Date object (e.g., null, undefined, or some other unexpected type), return 'N/A'.
     return 'N/A';
   };
 
@@ -46,12 +44,12 @@ export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResul
     sunrise: formatTime(zmanimCalendar.getSunrise()),
     sofZmanShmaMGA: formatTime(zmanimCalendar.getSofZmanShmaMGA()),
     sofZmanShmaGRA: formatTime(zmanimCalendar.getSofZmanShmaGRA()),
-    sofZmanTefillaMGA: formatTime(zmanimCalendar.getSofZmanTefillaMGA()),
-    sofZmanTefillaGRA: formatTime(zmanimCalendar.getSofZmanTefillaGRA()),
+    sofZmanTefillaMGA: formatTime(zmanimCalendar.getSofZmanTfilaMGA()),
+    sofZmanTefillaGRA: formatTime(zmanimCalendar.getSofZmanTfilaGRA()),
     chatzos: formatTime(zmanimCalendar.getChatzos()),
     minchaGedola: formatTime(zmanimCalendar.getMinchaGedola()),
     minchaKetana: formatTime(zmanimCalendar.getMinchaKetana()),
-    plagHaMincha: formatTime(zmanimCalendar.getPlagHaMincha()),
+    plagHaMincha: formatTime(zmanimCalendar.getPlagHamincha()),
     sunset: formatTime(zmanimCalendar.getSunset()),
     tzeit: formatTime(zmanimCalendar.getTzais()),
     shkia: formatTime(zmanimCalendar.getShkia()),
