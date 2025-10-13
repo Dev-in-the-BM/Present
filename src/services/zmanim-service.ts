@@ -33,6 +33,13 @@ export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResul
   const validTimezone = location.timezone || DEFAULT_TZ;
   const validLocationName = location.locationName || 'Default Location';
 
+  console.log("DEBUG: Zmanim Calculation Input:");
+  console.log("  Original Location:", location);
+  console.log("  Parsed Latitude:", validLat);
+  console.log("  Parsed Longitude:", validLon);
+  console.log("  Timezone:", validTimezone);
+  console.log("  Date:", date);
+
   const geoLocation = new GeoLocation(
     validLocationName,
     validLat,
@@ -48,10 +55,11 @@ export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResul
     if (timeValue instanceof Date && !isNaN(timeValue.getTime())) {
       return timeValue.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
     }
+    console.warn("DEBUG: Invalid time value encountered, returning N/A:", timeValue);
     return 'N/A';
   };
 
-  return {
+  const result = {
     date: date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
     alosHashachar: formatTime(zmanimCalendar.getAlosHashachar()),
     sunrise: formatTime(zmanimCalendar.getSunrise()),
@@ -66,4 +74,7 @@ export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResul
     sunset: formatTime(zmanimCalendar.getSunset()),
     tzeit: formatTime(zmanimCalendar.getTzais()),
   };
+
+  console.log("DEBUG: Zmanim Calculation Result:", result);
+  return result;
 };
