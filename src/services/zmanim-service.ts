@@ -52,6 +52,6 @@ export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResul
     plagHaMincha: formatTime(zmanimCalendar.getPlagHamincha()),
     sunset: formatTime(zmanimCalendar.getSunset()),
     tzeit: formatTime(zmanimCalendar.getTzais()),
-    shkia: formatTime(zmanimCalendar.getShkia()),
+    shkia: formatTime(zmanimCalendar.getShkiah()),
   };
 };
