@@ -15,7 +15,6 @@ export interface ZmanimResult {
   plagHaMincha: string;
   sunset: string;
   tzeit: string;
-  shkia: string;
   candleLighting?: string;
   parsha?: string;
 }
@@ -52,6 +51,5 @@ export const calculateZmanim = (location: UserLocation, date: Date): ZmanimResul
     plagHaMincha: formatTime(zmanimCalendar.getPlagHamincha()),
     sunset: formatTime(zmanimCalendar.getSunset()),
     tzeit: formatTime(zmanimCalendar.getTzais()),
-    shkia: formatTime(zmanimCalendar.getShkiah()),
   };
 };
