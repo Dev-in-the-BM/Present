@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { savePreference, getPreference, UserLocation } from '@/services/data-store';
 import { calculateZmanim, ZmanimResult } from '@/services/zmanim-service';
-import { Calendar as CalendarIcon, ArrowLeft, Settings, MapPin } from 'lucide-react';
+import { Calendar as CalendarIcon, ArrowLeft, Settings, MapPin, Sun, Sunset, Coffee } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
@@ -59,9 +59,23 @@ const ZmanimPage: React.FC = () => {
     setIsSettingsOpen(false);
   };
 
+  const renderZmanimList = (zmanimSubset: { [key: string]: string }) => (
+    <div className="space-y-3">
+      {Object.entries(zmanimSubset).map(([key, value], index, arr) => (
+        <React.Fragment key={key}>
+          <div className="flex justify-between items-center text-base">
+            <span className="text-white/80">{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</span>
+            <span className="font-semibold">{value}</span>
+          </div>
+          {index < arr.length - 1 && <Separator className="bg-white/10" />}
+        </React.Fragment>
+      ))}
+    </div>
+  );
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-primary to-secondary p-4 sm:p-6 lg:p-8 text-white">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <header className="flex items-center justify-between mb-8">
           <Button asChild variant="ghost" className="hover:bg-white/10">
             <Link to="/">
@@ -69,9 +83,14 @@ const ZmanimPage: React.FC = () => {
               Back to Dashboard
             </Link>
           </Button>
-          <h1 className="text-4xl font-extrabold tracking-tight">
-            Today's Zmanim
-          </h1>
+          <div className="text-center">
+            <h1 className="text-4xl font-extrabold tracking-tight">
+              Today's Zmanim
+            </h1>
+            <p className="text-white/80 text-lg mt-1">
+              {zmanim?.date || 'N/A'}
+            </p>
+          </div>
           <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
             <DialogTrigger asChild>
               <Button variant="ghost" size="icon" className="hover:bg-white/10">
@@ -118,99 +137,93 @@ const ZmanimPage: React.FC = () => {
           </Dialog>
         </header>
 
+        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div className="flex items-center gap-2 text-2xl font-semibold">
+                <MapPin className="h-6 w-6" />
+                {location.locationName || 'Custom Location'}
+            </div>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-full md:w-[280px] justify-start text-left font-normal bg-transparent hover:bg-white/20 border-white/20 text-base",
+                    !selectedDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700">
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date) => setSelectedDate(date || new Date())}
+                  initialFocus
+                  className="text-white"
+                />
+              </PopoverContent>
+            </Popover>
+        </div>
+
         <main>
-          <Card className="bg-white/10 border-0 text-white">
-            <CardHeader className="flex flex-row items-start justify-between">
-              <div>
-                <CardTitle className="text-3xl flex items-center">
-                  <MapPin className="mr-3 h-7 w-7" />
-                  {location.locationName || 'Custom Location'}
-                </CardTitle>
-                <CardDescription className="text-white/80 text-lg mt-1">
-                  {zmanim?.date || 'N/A'}
-                </CardDescription>
-              </div>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-[200px] justify-start text-left font-normal bg-transparent hover:bg-white/20 border-white/20",
-                      !selectedDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-gray-800 border-gray-700">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={(date) => setSelectedDate(date || new Date())}
-                    initialFocus
-                    className="text-white"
-                  />
-                </PopoverContent>
-              </Popover>
-            </CardHeader>
-            <CardContent className="mt-6">
-              {zmanim ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-6 text-xl">
-                  <div className="flex justify-between items-center p-3 rounded-lg transition-all hover:bg-white/10">
-                    <span className="font-semibold">Alos Hashachar:</span>
-                    <span>{zmanim.alosHashachar}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 rounded-lg transition-all hover:bg-white/10">
-                    <span className="font-semibold">Sunrise:</span>
-                    <span>{zmanim.sunrise}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 rounded-lg transition-all hover:bg-white/10">
-                    <span className="font-semibold">Sof Zman Shma (MGA):</span>
-                    <span>{zmanim.sofZmanShmaMGA}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 rounded-lg transition-all hover:bg-white/10">
-                    <span className="font-semibold">Sof Zman Shma (GRA):</span>
-                    <span>{zmanim.sofZmanShmaGRA}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 rounded-lg transition-all hover:bg-white/10">
-                    <span className="font-semibold">Sof Zman Tefilla (MGA):</span>
-                    <span>{zmanim.sofZmanTefillaMGA}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 rounded-lg transition-all hover:bg-white/10">
-                    <span className="font-semibold">Sof Zman Tefilla (GRA):</span>
-                    <span>{zmanim.sofZmanTefillaGRA}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 rounded-lg transition-all hover:bg-white/10">
-                    <span className="font-semibold">Chatzos:</span>
-                    <span>{zmanim.chatzos}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 rounded-lg transition-all hover:bg-white/10">
-                    <span className="font-semibold">Mincha Gedola:</span>
-                    <span>{zmanim.minchaGedola}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 rounded-lg transition-all hover:bg-white/10">
-                    <span className="font-semibold">Mincha Ketana:</span>
-                    <span>{zmanim.minchaKetana}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 rounded-lg transition-all hover:bg-white/10">
-                    <span className="font-semibold">Plag HaMincha:</span>
-                    <span>{zmanim.plagHaMincha}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 rounded-lg transition-all hover:bg-white/10">
-                    <span className="font-semibold">Sunset:</span>
-                    <span>{zmanim.sunset}</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 rounded-lg transition-all hover:bg-white/10">
-                    <span className="font-semibold">Tzeit Hakochavim:</span>
-                    <span>{zmanim.tzeit}</span>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-center text-white/80">Please save a valid location to see Zmanim.</p>
-              )}
-            </CardContent>
-          </Card>
+          {zmanim ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <Card className="bg-white/5 border-0 text-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-2xl">
+                    <Coffee className="h-6 w-6" />
+                    Morning
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {renderZmanimList({
+                    "Alos Hashachar": zmanim.alosHashachar,
+                    "Sunrise": zmanim.sunrise,
+                    "Sof Zman Shma (MGA)": zmanim.sofZmanShmaMGA,
+                    "Sof Zman Shma (GRA)": zmanim.sofZmanShmaGRA,
+                    "Sof Zman Tefilla (MGA)": zmanim.sofZmanTefillaMGA,
+                    "Sof Zman Tefilla (GRA)": zmanim.sofZmanTefillaGRA,
+                  })}
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/5 border-0 text-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-2xl">
+                    <Sun className="h-6 w-6" />
+                    Midday
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {renderZmanimList({
+                    "Chatzos": zmanim.chatzos,
+                    "Mincha Gedola": zmanim.minchaGedola,
+                    "Mincha Ketana": zmanim.minchaKetana,
+                  })}
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white/5 border-0 text-white">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-2xl">
+                    <Sunset className="h-6 w-6" />
+                    Afternoon & Evening
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {renderZmanimList({
+                    "Plag HaMincha": zmanim.plagHaMincha,
+                    "Sunset": zmanim.sunset,
+                    "Tzeit Hakochavim": zmanim.tzeit,
+                  })}
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <p className="text-center text-white/80">Please save a valid location to see Zmanim.</p>
+          )}
         </main>
       </div>
     </div>
